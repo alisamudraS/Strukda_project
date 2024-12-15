@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from tkcalendar import DateEntry
-from supabase import create_client
-from config import SUPABASE_URL, SUPABASE_API_KEY
-from datetime import datetime
+from utils.supabase import supabase 
+from datetime import datetime, time
 
 class EditTugasScreen(tk.Frame):
     def __init__(self, master, nav_manager):
@@ -52,19 +51,40 @@ class EditTugasScreen(tk.Frame):
     def go_back(self):
         self.nav_manager.show_main_screen()
 
+
     def update_task(self):
         tugas_id = self.id_entry.get()
         nama = self.nama_entry.get()
         deskripsi = self.deskripsi_entry.get()
         deadline_date = self.deadline_entry.get_date().isoformat()
-        deadline_time = f"{self.hour_cb.get()}:{self.minute_cb.get()}:00"
-        deadline = f"{deadline_date}T{deadline_time}"
+        deadline_hour = self.hour_cb.get()
+        deadline_minute = self.minute_cb.get()
 
-        if not tugas_id or not nama or not deskripsi or not deadline_date or not self.hour_cb.get() or not self.minute_cb.get():
+
+        if not tugas_id or not nama or not deskripsi or not deadline_date or not deadline_hour or not deadline_minute:
             messagebox.showerror("Error", "Semua kolom harus diisi.")
             return
+            
 
-        supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)
+        current_time = datetime.now()
+
+        given_date = datetime.strptime(deadline_date, "%Y-%m-%d")
+        given_time = time(int(deadline_hour), int(deadline_minute))
+
+        
+        if given_date.date() < current_time.date():
+            messagebox.showerror("Error", "Tanggal yang diberikan sudah lewat")
+            return
+
+        if given_time <= current_time.time():
+            messagebox.showerror("Error", "Jam dan menit yang diberikan sudah lewat")
+            return
+
+        
+        deadline_time = f"{deadline_hour}:{deadline_minute}:00"
+        deadline = f"{deadline_date}T{deadline_time}"
+
+
         tugas = supabase.table('tugas').select('*').eq('id', tugas_id).execute().data
 
         if len(tugas) == 0:
