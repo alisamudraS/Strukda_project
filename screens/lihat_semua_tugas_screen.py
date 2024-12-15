@@ -29,7 +29,7 @@ class LihatSemuaTugasScreen(tk.Frame):
         self.kembali_button.pack()
 
     def go_back(self):
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()
 
     def load_data(self):
         supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)

@@ -2,7 +2,6 @@
 
 import tkinter as tk
 from screens.main_screen import MainScreen
-from screens.task_screen import TaskScreen
 from screens.lihat_semua_tugas_screen import LihatSemuaTugasScreen
 from screens.tambah_tugas_screen import TambahTugasScreen
 from screens.edit_tugas_screen import EditTugasScreen
@@ -18,12 +17,6 @@ class NavigationManager:
         if self.frame:
             self.frame.destroy()
         self.frame = MainScreen(self.master, self)
-        self.frame.grid(row=0, column=0, sticky="nsew")
-
-    def show_task_screen(self):
-        if self.frame:
-            self.frame.destroy()
-        self.frame = TaskScreen(self.master, self)  # Pass nav_manager ke TaskScreen
         self.frame.grid(row=0, column=0, sticky="nsew")
 
     def show_lihat_semua_tugas_screen(self):

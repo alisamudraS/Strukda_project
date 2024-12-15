@@ -50,7 +50,7 @@ class EditTugasScreen(tk.Frame):
         self.kembali_button.pack()
 
     def go_back(self):
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()
 
     def update_task(self):
         tugas_id = self.id_entry.get()
@@ -78,4 +78,4 @@ class EditTugasScreen(tk.Frame):
         }).eq('id', tugas_id).execute()
 
         messagebox.showinfo("Berhasil", "Tugas berhasil diperbarui.")
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()

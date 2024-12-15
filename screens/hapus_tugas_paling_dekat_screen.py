@@ -64,4 +64,4 @@ class HapusTugasPalingDekatScreen(tk.Frame):
         return int(time_diff)
 
     def go_back(self):
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()

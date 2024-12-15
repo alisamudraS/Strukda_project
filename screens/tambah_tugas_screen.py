@@ -1,9 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from datetime import datetime
+from datetime import datetime, time
 from tkcalendar import DateEntry  # Import DateEntry dari tkcalendar
-from supabase import create_client
-from config import SUPABASE_URL, SUPABASE_API_KEY
+from utils.supabase import supabase
 
 class TambahTugasScreen(tk.Frame):
     def __init__(self, master, nav_manager):
@@ -47,20 +46,41 @@ class TambahTugasScreen(tk.Frame):
         self.kembali_button.pack()
 
     def go_back(self):
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()
 
     def add_task(self):
         nama = self.nama_entry.get()
         deskripsi = self.deskripsi_entry.get()
         deadline_date = self.deadline_entry.get()
-        deadline_time = f"{self.hour_cb.get()}:{self.minute_cb.get()}"
-        deadline = f"{deadline_date}T{deadline_time}"
+        deadline_hour = self.hour_cb.get()
+        deadline_minute = self.minute_cb.get()
 
-        if not nama or not deskripsi or not deadline_date or not self.hour_cb.get() or not self.minute_cb.get():
+
+        if not nama or not deskripsi or not deadline_date or not deadline_hour or not deadline_minute:
             messagebox.showerror("Error", "Semua kolom harus diisi.")
             return
+        
 
-        supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)
+        current_time = datetime.now()
+
+        given_date = datetime.strptime(deadline_date, "%m/%d/%y")
+        given_time = time(int(deadline_hour), int(deadline_minute))
+
+        
+        if given_date.date() < current_time.date():
+            messagebox.showerror("Error", "Tanggal yang diberikan sudah lewat")
+            return
+
+        if given_time <= current_time.time():
+            messagebox.showerror("Error", "Jam dan menit yang diberikan sudah lewat")
+            return
+        
+        
+        deadline_time = f"{deadline_hour}:{deadline_minute}"
+        deadline = f"{deadline_date}T{deadline_time}"
+        
+
+        # supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)
         supabase.table('tugas').insert({
             'nama_tugas': nama,
             'deskripsi_tugas': deskripsi,
@@ -68,4 +88,4 @@ class TambahTugasScreen(tk.Frame):
         }).execute()
 
         messagebox.showinfo("Berhasil", "Tugas berhasil ditambahkan.")
-        self.nav_manager.show_task_screen()
+        self.nav_manager.show_main_screen()
