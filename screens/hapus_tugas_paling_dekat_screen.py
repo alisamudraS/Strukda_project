@@ -3,14 +3,12 @@ from tkinter import scrolledtext
 from datetime import datetime
 import pytz
 from models.min_heap import MinHeap
-from supabase import create_client
-from config import SUPABASE_URL, SUPABASE_API_KEY
+from utils.supabase import supabase
 
 class HapusTugasPalingDekatScreen(tk.Frame):
     def __init__(self, master, nav_manager):
         super().__init__(master)
         self.nav_manager = nav_manager
-        self.supabase = create_client(SUPABASE_URL, SUPABASE_API_KEY)
         self.heap = MinHeap()
         self.master = master
         self.pack()
@@ -40,7 +38,7 @@ class HapusTugasPalingDekatScreen(tk.Frame):
 
     def load_tasks(self):
         self.heap = MinHeap()  # Reset heap
-        result = self.supabase.table('tugas').select('*').execute()
+        result = supabase.table('tugas').select('*').execute()
         for task in result.data:
             time_diff = self.calculate_time_diff(task['deadline'])
             self.heap.insert((time_diff, task))
@@ -49,7 +47,7 @@ class HapusTugasPalingDekatScreen(tk.Frame):
     def delete_urgent_task(self):
         if self.heap.heap:
             urgent_task = self.heap.extract_min()[1]
-            self.supabase.table('tugas').delete().eq('id', urgent_task['id']).execute()
+            supabase.table('tugas').delete().eq('id', urgent_task['id']).execute()
             self.print_heap(self.text_after)  # Tampilkan heap yang diperbarui di widget "setelah"
 
     def print_heap(self, widget):
