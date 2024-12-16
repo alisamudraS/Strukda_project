@@ -31,7 +31,6 @@ class MainScreen(tk.Frame):
         current_time = datetime.now().isoformat()
         
         try:
-        
             response = supabase.table("tugas").delete().lt("deadline", current_time).execute()
 
             if response.error:
