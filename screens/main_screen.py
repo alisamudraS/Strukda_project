@@ -30,10 +30,19 @@ class MainScreen(tk.Frame):
     def delete_missed_task(self):
         current_time = datetime.now().isoformat()
         
-        response = supabase.table("tugas").delete().lt("deadline", current_time).execute()
+        try:
+        
+            response = supabase.table("tugas").delete().lt("deadline", current_time).execute()
 
-        if response.error:
-            print(f"Terjadi Kesalahan saat menghapus tugas yang terlewat, error : {response.error}")
+            if response.error:
+                print(f"Terjadi Kesalahan saat menghapus tugas yang terlewat, error : {response.error}")
+                
+
+        except Exception as e:
+                if "APIResponse[TypeVar]" in str(e):
+                     return
+
+                print(f"Terjadi Kesalahan saat menghapus tugas yang terlewat, error : {e}")
 
 
 
